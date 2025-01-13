@@ -1,0 +1,163 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .C{
+            aspect-ratio: 1/1;
+            height: 200px;
+            background-color: gray;
+            transition: 0.4s cubic-bezier(0, 0, 0, 0.91);
+        }
+        .D:hover{
+            rotate: 30deg;
+        }
+
+        #wrapper{
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            position:absolute;
+            
+        }
+
+        #body{
+            background-color: white; 
+            overflow: hidden;
+            margin: 0;
+            height: 100%;
+        }
+
+        @keyframes spad{
+            100%{
+                translate: 0 -250px;
+            }
+        }
+
+        @keyframes spad2{
+            100%{
+                translate: 0 650px;
+            }
+        }
+
+        @keyframes rotate{
+            100%{
+                rotate: 45deg;
+            }
+        }
+
+        .divs{
+            background-color: white;
+        }
+        
+    </style>
+</head>
+<body id="body">
+    <div id="wrapper">
+        <div class="C D"></div>
+    </div>
+
+    <script>
+        const button = document.querySelector(".C");
+        const bodyd = document.querySelector("#body");
+        const divs = document.querySelector(".divs")
+        const maxheight = document.body.clientHeight
+        const maxlength = document.body.clientWidth
+
+        const vers = 9
+        const hors = 16
+        const divh = maxheight/vers
+        const divl = maxlength/hors
+
+        divarr = []
+        function posneg(){
+            if (Math.floor(Math.random()*2) == 1){
+                return -1
+            }else{
+                return 1
+            }
+
+        }
+
+        function rand(){
+            let y = Math.floor(Math.random()*1081)+posneg()*1081*2+divh;
+            let x = Math.floor(Math.random()*1921)+posneg()*1921*2+divl;
+            return [x, y]
+        }
+
+        function move(block, n){
+            let rando = rand()
+            let keyframes = `
+        @keyframes ${"slide"+n} {
+            100%{
+                transform: translate(${rando[0]}px, ${rando[1]}px);
+            }
+        }`;
+            const style = document.createElement('style');
+            style.type = 'text/css';
+            style.innerHTML = keyframes;
+            document.head.appendChild(style); // Append to <head>
+            block.style.animation = `${"slide"+n} 2s forwards ease-out`
+        }
+
+        function rot(block, n){
+            block.style.animation = "rotate 0.7s forwards ease-out"
+            setTimeout(() => {move(block, n)}, 1000);
+        }
+
+        let bodyc = "Black"
+        let divc = "White"
+        function createdivs(){
+            console.log("Making divs")
+            document.querySelector("#wrapper").remove
+            for(let x = 0; x < maxheight; x += divh){
+                for(let y = 0; y < maxlength; y += divl){
+                    let divs = document.createElement("div")
+                    divs.classList.add("divs")
+                    divs.style.height = divh
+                    divs.style.width = divl
+                    divs.style.margin = x+"px 0 0 "+y+"px"
+                    divs.style.backgroundColor = divc
+                    divs.style.zIndex = 2
+                    divs.style.position = "absolute"
+                    bodyd.append(divs)
+                    divarr.push(divs)
+                    //setTimeout(() => {rot(divarr[i])}, 1000);
+                }
+            }
+            document.body.style.backgroundColor = bodyc
+            for(let i = 0; i < divarr.length; i++){
+                setTimeout(() => {rot(divarr[i], i)}, 300);
+            }
+            setTimeout(swap, 3500);
+        }
+
+        function swap(){
+            let old = bodyc
+            bodyc = divc
+            divc = old
+            createdivs()
+        }
+
+        
+
+        button.addEventListener("click", function(){
+            button.classList.remove("D")
+            button.style.transform = "rotate(30deg)"
+            button.style.animation = "spad 0.7s forwards ease-in-out, 0.7s spad2 forwards 0.7s ease-in"
+
+            setTimeout(createdivs, 2000);
+        }
+    )
+
+
+
+
+
+    </script>
+</body>
+</html>
